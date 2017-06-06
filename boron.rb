@@ -12,10 +12,9 @@ class MonitoringBoron
 
   def run
     puts "--------------------StartMonitoring--------------------"
-    binding.pry
     @stream.user do |tweet|
-      next unless tweet.is_a?(Twitter::Tweet)
-      next unless tweet.user.screen_name == "5percent_Dora" 
+      puts "@#{tweet.user.screen_name} #{tweet.full_text}"
+      next unless tweet.user.screen_name == "5percent_Dora"  
       next unless tweet.full_text =~ /チンポ（ﾎﾞﾛﾝ/
       slack_post(tweet)
     end
@@ -25,14 +24,14 @@ class MonitoringBoron
       channel: "#bot_tech",
       username: "ドラえもんﾎﾞﾛﾝのお知らせ",
       icon_emoji: ":squirrel:",
-      attachments: {
+      attachments: [{
         author_icon:    tweet.user.profile_image_url.to_s,
         author_name:    tweet.user.name,
         author_subname: "@#{tweet.user.screen_name}",
         text:           tweet.full_text,
         author_link:    tweet.uri.to_s,
         color:          tweet.user.profile_link_color
-      }
+      }]
     }.to_json)
   end
 end
