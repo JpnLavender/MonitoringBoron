@@ -5,12 +5,17 @@ require "json"
 
 class MonitoringBoron
   def initialize(conf)
-    @rest = Twitter::REST::Client.new(@config)
-    @stream = Twitter::Streaming::Client.new(@config)
+    @conf = conf
+    @rest = Twitter::REST::Client.new(@conf)
+    @stream = Twitter::Streaming::Client.new(@conf)
   end
+
   def run
+    puts "--------------------StartMonitoring--------------------"
+    binding.pry
     @stream.user do |tweet|
-      next unless tweet.user.screen_name == "5percent_Dora"
+      next unless tweet.is_a?(Twitter::Tweet)
+      next unless tweet.user.screen_name == "5percent_Dora" 
       next unless tweet.full_text =~ /チンポ（ﾎﾞﾛﾝ/
       slack_post(tweet)
     end
@@ -39,4 +44,5 @@ CONF = {
   access_token_secret: ENV.fetch("ACCESS_TOKEN_SECRET")
 }
 
-MonitoringBoron.new(CONF).run
+app = MonitoringBoron.new(CONF)
+app.run
